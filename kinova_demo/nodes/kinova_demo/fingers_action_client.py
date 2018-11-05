@@ -91,7 +91,7 @@ def kinova_robotTypeParser(kinova_robotType_):
     finger_number = int(kinova_robotType_[5])
     prefix = kinova_robotType_ + "_"
     finger_maxDist = 18.9/2/1000  # max distance for one finger in meter
-    finger_maxTurn = 6800  # max thread turn for one finger
+    finger_maxTurn = 55 #6800  # max thread turn for one finger
 
 
 def unitParser(unit_, finger_value_, relative_):
