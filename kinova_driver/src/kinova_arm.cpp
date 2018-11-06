@@ -389,7 +389,11 @@ bool KinovaArm::addCartesianPoseToTrajectory(kinova_msgs::AddPoseToCartesianTraj
     pose.ThetaX = req.ThetaX;
     pose.ThetaY = req.ThetaY;
     pose.ThetaZ = req.ThetaZ;
-    kinova_comm_.setCartesianPosition(pose,false);
+
+	ROS_INFO("Gonna set cartesian position");
+    kinova_comm_.setCartesianPosition(pose,0,false);
+	ROS_INFO("Cartesian position set");
+	return true;
 }
 
 bool KinovaArm::clearTrajectoriesServiceCallback(

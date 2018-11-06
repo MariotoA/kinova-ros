@@ -1053,6 +1053,7 @@ void KinovaComm::setCartesianPosition(const KinovaPose &pose, int timeout, bool 
         result = kinova_api_.eraseAllTrajectories();
         if (result != NO_ERROR_KINOVA)
         {
+			ROS_INFO("Could not erase trajectories");
             throw KinovaCommException("Could not erase trajectories", result);
         }
     }
@@ -1062,6 +1063,7 @@ void KinovaComm::setCartesianPosition(const KinovaPose &pose, int timeout, bool 
     result = kinova_api_.setCartesianControl();
     if (result != NO_ERROR_KINOVA)
     {
+		ROS_INFO("Could not set Cartesian control");
         throw KinovaCommException("Could not set Cartesian control", result);
     }
 
@@ -1073,6 +1075,7 @@ void KinovaComm::setCartesianPosition(const KinovaPose &pose, int timeout, bool 
     result = kinova_api_.sendBasicTrajectory(kinova_pose);
     if (result != NO_ERROR_KINOVA)
     {
+		ROS_INFO("Could not send basic trajectory");
         throw KinovaCommException("Could not send basic trajectory", result);
     }
 }
