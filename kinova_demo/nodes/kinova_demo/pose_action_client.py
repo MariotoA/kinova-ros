@@ -224,7 +224,7 @@ def verboseParser(verbose, pose_mq_):
 
 
 if __name__ == '__main__':
-
+	
     args = argumentParser(None)
 
     kinova_robotTypeParser(args.kinova_robotType)
