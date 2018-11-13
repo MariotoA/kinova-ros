@@ -42,7 +42,7 @@ def cartesian_pose_client(position, orientation):
 
     client.send_goal(goal)
 
-    if client.wait_for_result(rospy.Duration(10.0)):
+    if client.wait_for_result(rospy.Duration(100.0)):
         return client.get_result()
     else:
         client.cancel_all_goals()
@@ -222,28 +222,35 @@ def verboseParser(verbose, pose_mq_):
         print('Cartesian orientation in Euler-XYZ(degree) is: ')
         print('tx {:3.1f}, ty {:3.1f}, tz {:3.1f}'.format(orientation_deg[0], orientation_deg[1], orientation_deg[2]))
 
+def moveArm(pose_value=[0]*6,kinova_robotType='j2n6s300', unit='mrad', is_relative=True,is_verbose=True, init= False):
+    """This is a simple script to change final effector pose using a simple action client. 
 
-if __name__ == '__main__':
-	
-    args = argumentParser(None)
+	Execution is synchronized since it waits the action server to finish.
 
-    kinova_robotTypeParser(args.kinova_robotType)
-    rospy.init_node(prefix + 'pose_action_client')
+	:arg pose_value: The movement command.
+	:arg kinova_robotType: This is the specification of your kinova arm. Should follow this regex: [{j|m|r|c}{1|2}{s|n}{4|6|7}{s|a}{2|3}{0}{0}]. For more details: https://github.com/Kinovarobotics/kinova-ros/blob/master/README.md
+	:arg unit: The goal pose unit. Values accepted are: 'mq', 'mrad' and 'mdeg', mq is for your pose orientation being in quaternions.
+	mrad and mdeg are for euler angles in radians and degrees respectively. Default 'mrad'.
+	:arg is_relative: A flag indicating if pose_value is seen from current pose or base_link pose. Default True.
+	:arg is_verbose: A flag indicating if extra information about goal should be printed. Default True."""
+    kinova_robotTypeParser(kinova_robotType)
+    if init:
+        rospy.init_node(prefix + 'pose_action_client')
 
-    if args.unit == 'mq':
-        if len(args.pose_value) != 7:
-            print('Number of input values {} is not equal to 7 (3 position + 4 Quaternion).'.format(len(args.pose_value)))
+    if unit == 'mq':
+        if len(pose_value) != 7:
+            print('Number of input values {} is not equal to 7 (3 position + 4 Quaternion).'.format(len(pose_value)))
             sys.exit(0)
-    elif (args.unit == 'mrad') | (args.unit == 'mdeg'):
-        if len(args.pose_value) != 6:
-            print('Number of input values {} is not equal to 6(3 position + 3 EulerAngles).'.format(len(args.pose_value)))
+    elif (unit == 'mrad') | (unit == 'mdeg'):
+        if len(pose_value) != 6:
+            print('Number of input values {} is not equal to 6(3 position + 3 EulerAngles).'.format(len(pose_value)))
             sys.exit(0)
     else:
         raise Exception('Cartesian value have to be in unit: mq, mdeg or mrad')
 
     getcurrentCartesianCommand(prefix)
 
-    pose_mq, pose_mdeg, pose_mrad = unitParser(args.unit, args.pose_value, args.relative)
+    pose_mq, pose_mdeg, pose_mrad = unitParser(unit, pose_value, is_relative)
 
     try:
 
@@ -257,4 +264,8 @@ if __name__ == '__main__':
         print "program interrupted before completion"
 
 
-    verboseParser(args.verbose, poses)
+    verboseParser(is_verbose, poses)	
+
+if __name__ == '__main__':
+    args = argumentParser(None)
+    moveArm( args.pose_value, args.kinova_robotType, args.unit,args.relative, args.verbose, True)

@@ -59,5 +59,6 @@ install(PROGRAMS
   nodes/kinova_demo/gravity_compensated_mode.py
   nodes/kinova_demo/run_COMParameters_estimation.py	
   nodes/kinova_demo/trajectory_server_client.py
+  nodes/kinova_demo/grab_object_in_fixed_position.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

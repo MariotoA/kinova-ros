@@ -17,7 +17,7 @@ arm_joint_number = 0
 finger_number = 0
 prefix = 'NO_ROBOT_TYPE_DEFINED_'
 finger_maxDist = 18.9/2/1000  # max distance for one finger
-finger_maxTurn = 6800  # max thread rotation for one finger
+finger_maxTurn = 55#  # max thread rotation for one finger
 currentFingerPosition = [0.0, 0.0, 0.0]
 
 def gripper_client(finger_positions):
@@ -37,7 +37,8 @@ def gripper_client(finger_positions):
     else:
         goal.fingers.finger3 = float(finger_positions[2])
     client.send_goal(goal)
-    if client.wait_for_result(rospy.Duration(5.0)):
+    if client.wait_for_result(rospy.Duration(1000.0)):
+        print("Client gripper if")
         return client.get_result()
     else:
         client.cancel_all_goals()
@@ -152,23 +153,29 @@ def verboseParser(verbose_, finger_turn_):
         print(', '.join('finger{:1.1f} {:3.1f}%'.format(k[0]+1, k[1]) for k in enumerate(finger_percent_)))
 
 
-if __name__ == '__main__':
+def moveFingers(finger_value=3*[0], kinova_robotType='j2n6s300', unit='percent', is_relative=True,is_verbose=True,init=False):
+    """This is a simple script to move fingers (oper or close) using a simple action client. 
 
+	Execution is synchronized since it waits the action server to finish.
 
-    args = argumentParser(None)
+	:arg finger_value: The movement command.
+	:arg kinova_robotType: This is the specification of your kinova arm. Should follow this regex: [{j|m|r|c}{1|2}{s|n}{4|6|7}{s|a}{2|3}{0}{0}]. For more details: https://github.com/Kinovarobotics/kinova-ros/blob/master/README.md
+	:arg unit: The finger value unit. Values accepted are: 'percent', 'turn' and 'mm'. Default is 'percent'.
+	:arg is_relative: A flag indicating if pose_value is seen from current pose or base_link pose. Default True.
+	:arg is_verbose: A flag indicating if extra information about goal should be printed. Default True."""
+    kinova_robotTypeParser(kinova_robotType)
+    if init:
+        rospy.init_node(prefix + 'gripper_workout')
 
-    kinova_robotTypeParser(args.kinova_robotType)
-    rospy.init_node(prefix + 'gripper_workout')
-
-    if len(args.finger_value) != finger_number:
-        print('Number of input values {} is not equal to number of fingers {}. Please run help to check number of fingers with different robot type.'.format(len(args.finger_value), finger_number))
+    if len(finger_value) != finger_number:
+        print('Number of input values {} is not equal to number of fingers {}. Please run help to check number of fingers with different robot type.'.format(len(finger_value), finger_number))
         sys.exit(0)
 
     # get Current finger position if relative position
     getCurrentFingerPosition(prefix)
 
-    finger_turn, finger_meter, finger_percent = unitParser(args.unit, args.finger_value, args.relative)
-
+    finger_turn, finger_meter, finger_percent = unitParser(unit, finger_value, is_relative)
+    print(finger_turn)
     try:
 
 
@@ -189,4 +196,7 @@ if __name__ == '__main__':
         print('program interrupted before completion')
 
 
-    verboseParser(args.verbose, positions)
+    verboseParser(is_verbose, positions)
+if __name__ == '__main__':
+    args = argumentParser(None)
+    moveFingers(args.finger_value, args.kinova_robotType, args.unit, args.relative, args.verbose,True)

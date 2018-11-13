@@ -10,9 +10,10 @@ import numpy as np
 import actionlib
 import kinova_msgs.msg
 from kinova_msgs.srv import AddPoseToCartesianTrajectory
+from math import pi
 import std_msgs.msg
 import geometry_msgs.msg
-
+from fingers_action_client import gripperGoTo
 import math
 import argparse
 import rosservice
@@ -24,8 +25,17 @@ prefix = 'NO_ROBOT_TYPE_DEFINED_'
 finger_maxDist = 18.9/2/1000  # max distance for one finger
 finger_maxTurn = 6800  # max thread rotation for one finger
 currentCartesianCommand = [0.212322831154, -0.257197618484, 0.509646713734, 1.63771402836, 1.11316478252, 0.134094119072] # default home in unit mq
-p_increment = [.2, 0, 0, 0, 0, 0]
-p_increment2 = [0, 0, -.2, 0, 0, 0]
+p_go_home = [0, 0, 0, 0,0, 0]
+p_increment = [.2, -.1, -.3, 0, 0, 0]
+p_increment2 = [x + y for x, y in zip(p_increment, [0, .7, 0, 0, 0, 0])]
+p_increment3 = [x + y for x, y in zip(p_increment2, [-.8, 0, 0, 0, 0, 0])]
+p_near_floor = [0, -.1, -.2, 0, 0, 0]
+p_near_floor2 = [x + y for x, y in zip(p_near_floor, [.1, 0, 0, 0, 0, 0])]
+p_rot = [0,0,0,0,2*pi/3,0]
+
+
+# yaw 2d z roll x pitch y
+
 def cartesian_trajectories_client(positions, orientations):
     """Send a cartesian trajectory to the action server."""
     server_address = '/j2n6s300_driver/in/add_pose_to_Cartesian_trajectory'#'/' + prefix + '_driver/in/add_pose_to_Cartesian_trajectory'
@@ -35,14 +45,17 @@ def cartesian_trajectories_client(positions, orientations):
     print('Wait ended')
     try:
         addPoseToCartesianTrajectory = rospy.ServiceProxy(server_address, AddPoseToCartesianTrajectory)
+        h = list(currentCartesianCommand)
         print("Service result correctly")
-        p = [x + y for x, y in zip(p_increment, currentCartesianCommand)]
+        p = [x + y for x, y in zip(p_near_floor, h)]
         addPoseToCartesianTrajectory(p[0], p[1], p[2], p[3], p[4], p[5]) 
-        print "pose was added cooly"
-        p = [x + y for x, y in zip(p_increment2, currentCartesianCommand)]       
+        print "1st pose added to buffer"
+        p = [x + y for x, y in zip(p_near_floor2, h)]       
         addPoseToCartesianTrajectory(p[0], p[1], p[2], p[3], p[4], p[5])
-		
-        print "pose was added super-cooly"
+        print "2nd pose added to buffer"
+        #p = [x + y for x, y in zip(p_increment3, h)]       
+        #addPoseToCartesianTrajectory(p[0], p[1], p[2], p[3], p[4], p[5])
+        #print "3rd pose added to buffer"
         return 0
         #p = [-x + y for x, y in zip(p_increment, currentCartesianCommand)]
         #addPoseToCartesianTrajectory(p[0], p[1], p[2], p[3], p[4], p[5])
@@ -101,3 +114,4 @@ kinova_robotTypeParser(args.kinova_robotType)
 rospy.init_node(prefix + 'pose_action_client')
 getcurrentCartesianCommand(prefix)
 cartesian_trajectories_client(None, None)
+gripperGoTo([50]*3,args.kinova_robotType)
