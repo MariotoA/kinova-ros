@@ -64,6 +64,7 @@ KinovaPoseActionServer::KinovaPoseActionServer(KinovaComm &arm_comm, const ros::
     double position_tolerance;
     double EulerAngle_tolerance;
     node_handle_.param<double>("stall_interval_seconds", stall_interval_seconds_, 1.0);
+	ROS_INFO("%s: %f", node_handle_.resolveName("stall_interval_seconds").c_str(), stall_interval_seconds_);
     node_handle_.param<double>("stall_threshold", stall_threshold_, 0.005);
     node_handle_.param<double>("rate_hz", rate_hz_, 10.0);
     node_handle_.param<double>("position_tolerance", position_tolerance, 0.01);
@@ -167,7 +168,8 @@ void KinovaPoseActionServer::actionCallback(const kinova_msgs::ArmPoseGoalConstP
 //            action_server_.publishFeedback(feedback);
 
             ROS_DEBUG_STREAM("" << __PRETTY_FUNCTION__ << ": current_pose X " << current_pose.X << "; Y "<< current_pose.Y << "; Z "<< current_pose.Z << "; ThetaX " << current_pose.ThetaX << "; ThetaY " << current_pose.ThetaY  << "; ThetaZ " << current_pose.ThetaZ );
-
+			ROS_DEBUG_STREAM("" << __PRETTY_FUNCTION__ << ": goal_pose X " << target.X << "; Y "<< target.Y << "; Z "<< target.Z << "; ThetaX " << target.ThetaX << "; ThetaY " << target.ThetaY  << "; ThetaZ " << target.ThetaZ );
+			ROS_DEBUG_STREAM("" << __PRETTY_FUNCTION__ << ": position_tolerance " << position_tolerance_ << ", EulerAngle_tolerance: " << EulerAngle_tolerance_);
             if (target.isCloseToOther(current_pose, position_tolerance_, EulerAngle_tolerance_))
             {
                 ROS_DEBUG_STREAM("" << __PRETTY_FUNCTION__ << ": arm_comm_.isCloseToOther");

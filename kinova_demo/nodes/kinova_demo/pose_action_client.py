@@ -23,10 +23,14 @@ prefix = 'NO_ROBOT_TYPE_DEFINED_'
 finger_maxDist = 18.9/2/1000  # max distance for one finger
 finger_maxTurn = 6800  # max thread rotation for one finger
 currentCartesianCommand = [0.212322831154, -0.257197618484, 0.509646713734, 1.63771402836, 1.11316478252, 0.134094119072] # default home in unit mq
-
+security_position_measure = 0.15
 
 def cartesian_pose_client(position, orientation):
     """Send a cartesian goal to the action server."""
+    #if position[0] < security_position_measure:
+    #    print "Goal falls under prohibited zone, discarding it."
+    #    return
+
     action_address = '/' + prefix + 'driver/pose_action/tool_pose'
     client = actionlib.SimpleActionClient(action_address, kinova_msgs.msg.ArmPoseAction)
     client.wait_for_server()
@@ -101,6 +105,13 @@ def getcurrentCartesianCommand(prefix_):
     rospy.wait_for_message(topic_address, kinova_msgs.msg.KinovaPose)
     print 'position listener obtained message for Cartesian pose. '
 
+def getcurrentToolPose(prefix_):
+    # wait to get current position
+    topic_address = '/' + prefix_ + 'driver/out/tool_pose'
+    rospy.Subscriber(topic_address, geometry_msgs.msg.PoseStamped, setcurrentToolPose)
+    rospy.wait_for_message(topic_address, geometry_msgs.msg.PoseStamped)
+    print 'position listener obtained message for Cartesian pose. '
+
 
 def setcurrentCartesianCommand(feedback):
     global currentCartesianCommand
@@ -113,7 +124,14 @@ def setcurrentCartesianCommand(feedback):
     # the following directly reading only read once and didn't update the value.
     # currentCartesianCommand = [feedback.X, feedback.Y, feedback.Z, feedback.ThetaX, feedback.ThetaY, feedback.Z] 
     # print 'currentCartesianCommand in setcurrentCartesianCommand is: ', currentCartesianCommand
+def setcurrentToolPose(pose_st):
+    global currentCartesianCommand
 
+    
+    pose = [pose_st.pose.position.x,pose_st.pose.position.y,pose_st.pose.position.z,
+    pose_st.pose.orientation.x,pose_st.pose.orientation.y,pose_st.pose.orientation.z,pose_st.pose.orientation.w]
+    currentCartesianCommand[:3] = pose[:3]
+    currentCartesianCommand[3:] = Quaternion2EulerXYZ(pose[3:])
 
 def argumentParser(argument_):
     """ Argument parser """
@@ -231,7 +249,7 @@ def moveArm(pose_value=[0]*6,kinova_robotType='j2n6s300', unit='mrad', is_relati
 	:arg kinova_robotType: This is the specification of your kinova arm. Should follow this regex: [{j|m|r|c}{1|2}{s|n}{4|6|7}{s|a}{2|3}{0}{0}]. For more details: https://github.com/Kinovarobotics/kinova-ros/blob/master/README.md
 	:arg unit: The goal pose unit. Values accepted are: 'mq', 'mrad' and 'mdeg', mq is for your pose orientation being in quaternions.
 	mrad and mdeg are for euler angles in radians and degrees respectively. Default 'mrad'.
-	:arg is_relative: A flag indicating if pose_value is seen from current pose or base_link pose. Default True.
+	:arg is_relative: A flag indicating if pose_value is seen from current pose or base_link pose. However, curret_pose is just added to goal, not moved to that frame. Default True.
 	:arg is_verbose: A flag indicating if extra information about goal should be printed. Default True."""
     kinova_robotTypeParser(kinova_robotType)
     if init:
@@ -249,7 +267,7 @@ def moveArm(pose_value=[0]*6,kinova_robotType='j2n6s300', unit='mrad', is_relati
         raise Exception('Cartesian value have to be in unit: mq, mdeg or mrad')
 
     getcurrentCartesianCommand(prefix)
-
+	#getcurrentToolPose(prefix)
     pose_mq, pose_mdeg, pose_mrad = unitParser(unit, pose_value, is_relative)
 
     try:

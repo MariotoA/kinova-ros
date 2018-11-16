@@ -5,14 +5,16 @@
   <arg name="kinova_robotName" default="$(arg kinova_robotType)"/>
 	<arg name="kinova_robotSerial" default="not_set" />
 
-  <!-- If the node handles multiple robots uncomment this and configure /config/multiple_robots.yaml" -->
-	<rosparam file="$(find kinova_bringup)/launch/config/multiple_robots.yaml" command="load" />
-
+  <!-- If the node handles multiple robots uncomment this and configure /config/multiple_robots.yaml" 
+	<rosparam file="$(find kinova_bringup)/launch/config/multiple_robots.yaml" command="load" /> -->
+	
+  
   <node name="$(arg kinova_robotName)_driver" pkg="kinova_driver" type="kinova_arm_driver" output="screen" cwd="node" args="$(arg kinova_robotType)">
     <rosparam file="$(find kinova_bringup)/launch/config/robot_parameters.yaml" command="load" />
     <param name="serial_number" value="$(arg kinova_robotSerial)" />   
     <param name="robot_name" value="$(arg kinova_robotName)" />   
-    <param name="robot_type" value="$(arg kinova_robotType)" />   
+    <param name="robot_type" value="$(arg kinova_robotType)" /> 
+	<param name="pose_action/stall_interval_seconds" value="1" />
   </node>
     
   <group unless="$(arg use_urdf)">
