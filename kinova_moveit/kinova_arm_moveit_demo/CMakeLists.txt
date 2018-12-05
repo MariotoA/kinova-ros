@@ -20,12 +20,12 @@ find_package(Boost REQUIRED system filesystem date_time thread)
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS 
+  CATKIN_DEPENDS
     moveit_core
     moveit_ros_planning_interface
     interactive_markers
 )
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 find_package(kinova_driver REQUIRED)
 
@@ -58,7 +58,11 @@ install(TARGETS pick_place DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 add_executable(test_accuracy src/test_accuracy.cpp include/test_accuracy.h)
 target_link_libraries(test_accuracy ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${kinova_driver_LIBRARIES})
 install(TARGETS test_accuracy DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
+catkin_python_setup()
+install(PROGRAMS
+  scripts/my_testament.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
