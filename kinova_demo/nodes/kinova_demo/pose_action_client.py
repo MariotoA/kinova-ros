@@ -47,7 +47,14 @@ def cartesian_pose_client(position, orientation):
     client.send_goal(goal)
 
     if client.wait_for_result(rospy.Duration(100.0)):
-        return client.get_result()
+        if client.get_state() == actionlib.GoalStatus.SUCCEEDED:
+            reached = 0
+        elif client.get_state() == actionlib.GoalStatus.ABORTED:
+            reached = 2
+        else:
+            reached = 1
+        print ('        goal is {}'.format(reached))
+        return client.get_result(), reached
     else:
         client.cancel_all_goals()
         print('        the cartesian action timed-out')
@@ -274,7 +281,7 @@ def moveArm(pose_value=[0]*6,kinova_robotType='j2n6s300', unit='mrad', is_relati
 
         poses = [float(n) for n in pose_mq]
 
-        result = cartesian_pose_client(poses[:3], poses[3:])
+        result,reached = cartesian_pose_client(poses[:3], poses[3:])
 
         print('Cartesian pose sent!')
 
@@ -282,7 +289,8 @@ def moveArm(pose_value=[0]*6,kinova_robotType='j2n6s300', unit='mrad', is_relati
         print "program interrupted before completion"
 
 
-    verboseParser(is_verbose, poses)	
+    verboseParser(is_verbose, poses)
+    return result,reached
 
 if __name__ == '__main__':
     args = argumentParser(None)

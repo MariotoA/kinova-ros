@@ -1615,5 +1615,19 @@ int KinovaComm::SetRedundancyResolutionToleastSquares(int state)
     //Not Available in API
 }
 
+int KinovaComm::addProtectionZone(const Zone& zone) 
+{
+	ZoneList pzone_list;
+	kinova_api_.getProtectionZone(pzone_list);
+	for(int i = 0; i < sizeof(pzone_list.Zones) / sizeof(Zone); i++)
+	{
+		for (int j = 0; j < sizeof(pzone_list.Zones[i].zoneShape.Points) / sizeof(CartesianInfo); j++) {
+  			ROS_INFO("Protection zone %d, cartesianInfo %d: [%f, %f, %f, %f, %f, %f]",i,j,pzone_list.Zones[i].zoneShape.Points[j].X,
+			pzone_list.Zones[i].zoneShape.Points[j].Y, pzone_list.Zones[i].zoneShape.Points[j].Z,
+			pzone_list.Zones[i].zoneShape.Points[j].ThetaX,pzone_list.Zones[i].zoneShape.Points[j].ThetaY,
+			pzone_list.Zones[i].zoneShape.Points[j].ThetaZ);
+		}
+	}
+}
 
 }  // namespace kinova

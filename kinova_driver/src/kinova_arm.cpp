@@ -550,9 +550,22 @@ void KinovaArm::publishJointAngles(void)
     }
     else if(finger_number_==3)
     {
-        joint_state.position[joint_total_number_-3] = fingers.Finger1/6800*80*M_PI/180;
+        //ROS_INFO("\n\n\nfingers.Finger1 %f\n\n\n", fingers.Finger1);
+        //45.25, 0.25
+        /*joint_state.position[joint_total_number_-3] = fingers.Finger1/6800*80*M_PI/180;
         joint_state.position[joint_total_number_-2] = fingers.Finger2/6800*80*M_PI/180;
         joint_state.position[joint_total_number_-1] = fingers.Finger3/6800*80*M_PI/180;
+        */
+        //ROS_INFO("\n\n\nFingers:\n%f\n%f\n%f\n", fingers.Finger1,fingers.Finger2,fingers.Finger3);
+        /*joint_state.position[joint_total_number_-3] = (fingers.Finger1)/45.25*80*M_PI/180;
+        joint_state.position[joint_total_number_-2] = (fingers.Finger2)/45.25*80*M_PI/180;
+        joint_state.position[joint_total_number_-1] = (fingers.Finger3)/45.25*80*M_PI/180;
+        */
+        float a = 0.60/45.0,b = 0.40 - 0.60/4.0/40.0;
+        joint_state.position[joint_total_number_-3] = (fingers.Finger1*a + b)*80*M_PI/180;
+        joint_state.position[joint_total_number_-2] = (fingers.Finger2*a + b)*80*M_PI/180;
+        joint_state.position[joint_total_number_-1] = (fingers.Finger3*a + b)*80*M_PI/180;
+       
     }
 
 

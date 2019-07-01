@@ -60,5 +60,9 @@ install(PROGRAMS
   nodes/kinova_demo/run_COMParameters_estimation.py	
   nodes/kinova_demo/trajectory_server_client.py
   nodes/kinova_demo/grab_object_in_fixed_position.py
+  nodes/kinova_demo/grab_object_in_tf.py
+  nodes/kinova_demo/auto_test.py
+  nodes/kinova_demo/best_test.py
+  nodes/kinova_demo/pick_detected_object.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

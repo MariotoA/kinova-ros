@@ -1,0 +1,19 @@
+<!-- Launch file principal para lanzar una simulación con Stage + MoveBse -->
+<launch>
+    <!--
+    The TF's have been measured by hand. Proper calibration is pending.
+	On lowering camera res:
+	https://answers.ros.org/question/55689/lower-kinect-resolution-for-rgbcamera-using-openni_launch/
+    -->
+
+
+
+    <arg name="camera" default="camera" />
+	<param name="/$(arg camera)/driver/data_skip" value="2" /> <!-- 0 is default, 10 will drop 9/10 frames -->
+   <node name="root_to_$(arg camera)_link" pkg="tf"
+ type="static_transform_publisher" args=" 0.24 -1.14 0.26 1.60 0.67 -0.03 root /$(arg camera)_link 100" /> 
+	<!-- 0.1 -0.1 1.39 0.11 0.05 1.570796327 -->
+	###Duplica la nube de punto con una frecuencia maxima de 1Hz 
+    <!--<node name="foo_throttler" type="throttle" pkg="topic_tools" args="messages /$(arg camera)/depth_registered/points 0.1 /$(arg camera)/depth_registered/points_throttle" />-->
+
+</launch>

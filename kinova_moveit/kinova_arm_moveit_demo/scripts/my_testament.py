@@ -103,18 +103,21 @@ class MoveGroupPythonIntefaceTutorial(object):
     ## END_SUB_TUTORIAL
 
     # Misc variables
-    self.plane_name = ''
-    self.robot = robot
-    self.scene = scene
+    # All these assignments are only to make the code above easier to read.
+    self.plane_name = '' # We leave this empty so it will be filled with the different added planes later
+    self.robot = robot #
+    self.scene = scene #
     print scene
-    self.group = group
-    self.currentpose = [0.212322831154, -0.257197618484, 0.509646713734, 1.63771402836, 1.11316478252, 0.134094119072] # default 
+    self.group = group #
+    # More variables
+    self.currentpose = [0.212322831154, -0.257197618484, 0.509646713734, 1.63771402836, 1.11316478252, 0.134094119072] # home pose 
     self.currentcartesiancommand = self.currentpose
     self.getcurrentToolPose()
     self.display_trajectory_publisher = display_trajectory_publisher
     self.planning_frame = planning_frame
     self.eef_link = eef_link
     self.group_names = group_names
+
   def add_box(self, name, pose, size, frameidref="world",timeout=4):
     if len(size) != 3 :
       print 'Size is a 3-tuple.'
@@ -293,7 +296,8 @@ if __name__ == '__main__':
     eulerori = [thx,thy,thz]
     main_pose =  [0]*7
     for i in range(len(main_pose)):
-      main_pose[i] = input()#[0.21335862577 + .2 ,-0.273997783661, 0.489361822605, 0.60780954361, 0.345389455557, 0.366351991892, 0.614051997662]
+      main_pose[i] = 0
+    main_pose = [0.21335862577 + .2 ,-0.273997783661, 0.489361822605, 0.60780954361, 0.345389455557, 0.366351991892, 0.614051997662]
 #position + EulerXYZ2Quaternion(eulerori)
     print tut.go_to_pose_goal(main_pose)
   except rospy.ROSInterruptException:

@@ -1,0 +1,7 @@
+<!-- Launch file principal para lanzar una simulación con Stage + MoveBse -->
+<launch>
+ <include file="$(find j2n6s300_moveit_config)/launch/j2n6s300_virtual_robot_demo.launch" />
+ <include file="$(find kinova_camera_launch)/launch/find_object_3d.launch" />
+ <include file="$(find kinova_camera_launch)/launch/camera_opensense.launch" />
+ <include file="$(find kinova_camera_launch)/launch/tf_camera_link.launch" />
+</launch>

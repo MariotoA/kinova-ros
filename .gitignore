@@ -26,7 +26,9 @@
 */catkin_generated
 */cmake_install.cmake
 */CATKIN_IGNORE
-
+.vscode/
+*.vscode/*
+.Rhistory
 
 #Stuff added by make eclipse-project
 *.project

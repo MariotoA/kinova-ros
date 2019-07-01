@@ -79,6 +79,10 @@ KinovaPoseActionServer::KinovaPoseActionServer(KinovaComm &arm_comm, const ros::
     ss << tf_prefix_ << "link_base";
     link_base_frame_ = ss.str();
 
+	////////// ADDED RECENTLY TODO
+	Zone zone;
+	arm_comm.addProtectionZone(zone);
+	/////////////////////////////////
     action_server_.start();
 
 //    if(ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
@@ -186,7 +190,7 @@ void KinovaPoseActionServer::actionCallback(const kinova_msgs::ArmPoseGoalConstP
             }
             else if ((current_time - last_nonstall_time_).toSec() > stall_interval_seconds_)
             {
-                ROS_DEBUG_STREAM("" << __PRETTY_FUNCTION__ << ": stall_interval_seconds_");
+                ROS_DEBUG_STREAM("" << __PRETTY_FUNCTION__ <<": current time: "<< (current_time - last_nonstall_time_).toSec() << ", stall_interval_seconds_: " << stall_interval_seconds_);
                 // Check if the full stall condition has been meet
                 result.pose = feedback.pose;
                 if (!arm_comm_.isStopped())
